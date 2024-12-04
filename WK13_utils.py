@@ -84,3 +84,12 @@ class LFWUtils(LFWUtils_Linear):
         data_labels += [l.item() for l in y]
         pred_labels += [l.item() for l in y_pred]
       return data_labels, pred_labels
+
+  @staticmethod
+  def count_parameters(model):
+    intp = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    return f"{intp:,}"
+
+  @staticmethod
+  def map01(x):
+    return (x - x.min()) / (x.max() - x.min())
