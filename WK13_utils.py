@@ -1,10 +1,13 @@
 import torch
 
+from IPython.display import display
+
 from torch import Tensor
 from torch.utils.data import DataLoader, Dataset
-from torchvision.transforms import v2
+from torchvision.utils import make_grid as tv_make_grid
 
 from data_utils import LFWUtils as LFWUtils_Linear
+from image_utils import make_image
 
 
 class FaceDataset(Dataset):
@@ -93,3 +96,12 @@ class LFWUtils(LFWUtils_Linear):
   @staticmethod
   def map01(x):
     return (x - x.min()) / (x.max() - x.min())
+
+  @staticmethod
+  def display_grids(activations, idx, max_imgs=64):
+    for layer,actv in activations.items():
+      batch = actv.unsqueeze(2)
+      grid = (255 * tv_make_grid(batch[idx, :max_imgs]))[0]
+      print("")
+      display(layer)
+      display(make_image(grid, width=grid.shape[1]).resize((4*LFWUtils.IMAGE_SIZE[0], 4*LFWUtils.IMAGE_SIZE[1])))
