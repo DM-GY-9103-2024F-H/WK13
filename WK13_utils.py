@@ -98,10 +98,22 @@ class LFWUtils(LFWUtils_Linear):
     return (x - x.min()) / (x.max() - x.min())
 
   @staticmethod
-  def display_grids(activations, idx, max_imgs=64):
+  def display_activation_grids(activations, idx, max_imgs=64):
     for layer,actv in activations.items():
       batch = actv.unsqueeze(2)
       grid = (255 * tv_make_grid(batch[idx, :max_imgs]))[0]
       print("")
       display(layer)
       display(make_image(grid, width=grid.shape[1]).resize((4*LFWUtils.IMAGE_SIZE[0], 4*LFWUtils.IMAGE_SIZE[1])))
+
+  @staticmethod
+  def display_kernel_grids(layer_kernels, max_imgs=64):
+    for layer,kernel in layer_kernels.items():
+      batch = kernel[:max_imgs, :3].abs()
+      batch_img_mins = batch.min(dim=0, keepdim=True)[0]
+      batch_img_maxs = batch.max(dim=0, keepdim=True)[0]
+      batch = (batch - batch_img_mins) / (batch_img_maxs - batch_img_mins)
+      grid = (255 * tv_make_grid(batch))
+      print("")
+      display(layer)
+      display(make_image(grid.permute(1,2,0), width=grid.shape[1]).resize((256, 256)))
